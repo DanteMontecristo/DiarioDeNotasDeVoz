@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# La CI solo lee el código: no necesita ningún permiso de escritura ni secretos.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (NotasDeVozAPI)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: NotasDeVozAPI
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: NotasDeVozAPI/package-lock.json
+
+      - name: Instalar dependencias exactas del lockfile
+        run: npm ci
+
+      - name: Tipos, lint, formato y pruebas con cobertura
+        run: npm run check
+
+      - name: Compilar
+        run: npm run build
+
+      - name: Auditar dependencias (falla con vulnerabilidades altas o críticas)
+        run: npm audit --audit-level=high
