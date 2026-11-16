@@ -3,7 +3,9 @@ import {
   actualizarNota,
   eliminarNota,
   insertarNota,
+  listarNotas,
   type Nota,
+  obtenerNota,
 } from "@/repositories/notasRepositorio";
 import { DURACION_MAXIMA_MS, esDuracionValida } from "@/utils/duracion";
 import { resolverEtiqueta } from "@/utils/etiqueta";
@@ -114,4 +116,13 @@ export async function renombrarNota(
   const { titulo, etiqueta } = textos;
   const cambio = await actualizarNota(deps.db, id, { titulo, etiqueta }, fecha.toISOString());
   return cambio ? { ok: true } : { ok: false, error: "La nota ya no existe." };
+}
+
+/** Notas vigentes, de la más reciente a la más antigua, filtradas por título o etiqueta. */
+export function buscarNotas(deps: DependenciasNotas, busqueda: string): Promise<Nota[]> {
+  return listarNotas(deps.db, busqueda);
+}
+
+export function obtenerNotaPorId(deps: DependenciasNotas, id: number): Promise<Nota | null> {
+  return obtenerNota(deps.db, id);
 }

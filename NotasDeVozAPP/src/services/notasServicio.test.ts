@@ -2,10 +2,12 @@ import { crearBaseDePrueba } from "../../pruebas/baseDePrueba";
 import { migrar } from "@/db/migraciones";
 import { listarNotas } from "@/repositories/notasRepositorio";
 import {
+  buscarNotas,
   type DependenciasNotas,
   eliminarNotaConArchivo,
   type GrabacionTerminada,
   guardarGrabacion,
+  obtenerNotaPorId,
   renombrarNota,
 } from "./notasServicio";
 
@@ -174,5 +176,24 @@ describe("renombrarNota", () => {
       ok: false,
       error: "La nota ya no existe.",
     });
+  });
+});
+
+describe("buscarNotas y obtenerNotaPorId", () => {
+  it("lista las notas y las filtra por título o etiqueta", async () => {
+    await guardarGrabacion(deps, grabacion({ titulo: "Lista de compras" }));
+    deps.generarId = () => "uuid-2";
+    await guardarGrabacion(deps, grabacion({ titulo: "Apuntes", etiqueta: "clase" }));
+
+    expect(await buscarNotas(deps, "")).toHaveLength(2);
+    expect(await buscarNotas(deps, "clase")).toMatchObject([{ titulo: "Apuntes" }]);
+  });
+
+  it("devuelve una nota por su id, o null si no existe", async () => {
+    const resultado = await guardarGrabacion(deps, grabacion());
+    const id = resultado.ok ? resultado.nota.id : -1;
+
+    expect(await obtenerNotaPorId(deps, id)).toMatchObject({ titulo: "Idea" });
+    expect(await obtenerNotaPorId(deps, 99)).toBeNull();
   });
 });
