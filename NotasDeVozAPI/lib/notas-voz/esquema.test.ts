@@ -32,6 +32,12 @@ describe("esquemaDatosNota: datos aceptados", () => {
     expect(esquemaDatosNota.parse(conExtras)).toEqual(valida);
   });
 
+  it("normaliza grabada_en a ISO UTC con milisegundos", () => {
+    const sinMilisegundos = { ...valida, grabada_en: "2026-11-01T15:04:05Z" };
+
+    expect(esquemaDatosNota.parse(sinMilisegundos).grabada_en).toBe("2026-11-01T15:04:05.000Z");
+  });
+
   it("acepta los límites de duración: 1 s y 120 s", () => {
     expect(campoQueFalla({ ...valida, duracion_ms: 1000 })).toBeUndefined();
     expect(campoQueFalla({ ...valida, duracion_ms: 120000 })).toBeUndefined();

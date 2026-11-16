@@ -4,8 +4,21 @@
  */
 type Datos = Record<string, unknown>;
 type Almacen = Map<string, Datos>;
-type Filtro = { campo: string; valor: string };
-type Opciones = { filtro: Filtro | null; orden: string | null; tope: number };
+type Operador = ">" | ">=" | "<";
+type Filtro = { campo: string; operador: Operador; valor: string };
+type Opciones = { filtros: Filtro[]; orden: string | null; tope: number };
+
+const COMPARAR: Record<Operador, (dato: string, valor: string) => boolean> = {
+  ">": (dato, valor) => dato > valor,
+  ">=": (dato, valor) => dato >= valor,
+  "<": (dato, valor) => dato < valor,
+};
+
+function cumple(datos: Datos, filtros: Filtro[]): boolean {
+  return filtros.every(({ campo, operador, valor }) =>
+    COMPARAR[operador](String(datos[campo]), valor),
+  );
+}
 
 class InstantaneaFalsa {
   constructor(
@@ -50,11 +63,11 @@ class ConsultaFalsa {
   constructor(
     protected readonly almacen: Almacen,
     protected readonly ruta: string,
-    private readonly opciones: Opciones = { filtro: null, orden: null, tope: Infinity },
+    private readonly opciones: Opciones = { filtros: [], orden: null, tope: Infinity },
   ) {}
 
-  where(campo: string, _operador: ">", valor: string): ConsultaFalsa {
-    return this.con({ filtro: { campo, valor } });
+  where(campo: string, operador: Operador, valor: string): ConsultaFalsa {
+    return this.con({ filtros: [...this.opciones.filtros, { campo, operador, valor }] });
   }
 
   orderBy(campo: string): ConsultaFalsa {
@@ -66,11 +79,11 @@ class ConsultaFalsa {
   }
 
   get(): Promise<{ docs: InstantaneaFalsa[] }> {
-    const { filtro, orden, tope } = this.opciones;
+    const { filtros, orden, tope } = this.opciones;
     const prefijo = `${this.ruta}/`;
     const filas = [...this.almacen.entries()]
       .filter(([clave]) => clave.startsWith(prefijo) && !clave.slice(prefijo.length).includes("/"))
-      .filter(([, datos]) => !filtro || String(datos[filtro.campo]) > filtro.valor)
+      .filter(([, datos]) => cumple(datos, filtros))
       .sort(([, a], [, b]) => (orden ? String(a[orden]).localeCompare(String(b[orden])) : 0))
       .slice(0, tope);
     const docs = filas.map(

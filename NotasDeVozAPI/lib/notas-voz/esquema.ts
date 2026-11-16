@@ -7,7 +7,8 @@ const camposNota = z.object({
   etiqueta: z.string().trim().min(1).max(30).nullable(),
   lat: z.number().min(-90).max(90).nullable(),
   lng: z.number().min(-180).max(180).nullable(),
-  grabada_en: z.iso.datetime(),
+  // Se normaliza a ISO UTC con milisegundos para poder comparar las fechas como texto.
+  grabada_en: z.iso.datetime().transform((fecha) => new Date(fecha).toISOString()),
 });
 
 /** Lo que acepta `PUT`: los campos declarados y nada más. */

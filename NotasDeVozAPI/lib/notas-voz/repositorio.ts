@@ -20,6 +20,22 @@ export async function listarDesde(uid: string, desde: string | null): Promise<No
   return resultado.docs.map((doc) => aNota(doc.id, doc.data()));
 }
 
+/** Notas vigentes (sin borrado lógico) grabadas en `[inicio, fin)`. */
+export async function listarGrabadasEntre(
+  uid: string,
+  inicio: string,
+  fin: string,
+): Promise<NotaVoz[]> {
+  const resultado = await coleccion(uid)
+    .where("grabada_en", ">=", inicio)
+    .where("grabada_en", "<", fin)
+    .get();
+  // El borrado se filtra aquí: hacerlo en la consulta exigiría un índice compuesto.
+  return resultado.docs
+    .map((doc) => aNota(doc.id, doc.data()))
+    .filter((nota) => nota.deleted_at === null);
+}
+
 /** Crea o reemplaza (idempotente). Gana la última escritura según la hora del servidor. */
 export function guardar(
   uid: string,
