@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Diario de notas de voz",
+    "slug": "diario-de-notas-de-voz",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "notasdevoz",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.notasdevoz.app"
+    },
+    "plugins": ["expo-router", "expo-status-bar"]
+  }
+}

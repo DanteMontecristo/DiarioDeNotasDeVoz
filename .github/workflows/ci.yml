@@ -43,3 +43,33 @@ jobs:
 
       - name: Auditar dependencias (falla con vulnerabilidades altas o críticas)
         run: npm audit --audit-level=high
+
+  app:
+    name: APP (NotasDeVozAPP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: NotasDeVozAPP
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: NotasDeVozAPP/package-lock.json
+
+      - name: Instalar dependencias exactas del lockfile
+        run: npm ci
+
+      - name: Tipos, lint, formato y pruebas con cobertura
+        run: npm run check
+
+      - name: Compilar el paquete de Android
+        run: npx expo export --platform android
+
+      - name: Auditar dependencias (falla con vulnerabilidades altas o críticas)
+        run: npm audit --audit-level=high
