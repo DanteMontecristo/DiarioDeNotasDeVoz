@@ -6,3 +6,5 @@ android
 ios
 package-lock.json
 expo-env.d.ts
+# Expo y Next reescriben este archivo con su propio formato
+tsconfig.json

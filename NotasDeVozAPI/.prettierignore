@@ -5,3 +5,5 @@ build
 coverage
 package-lock.json
 next-env.d.ts
+# Expo y Next reescriben este archivo con su propio formato
+tsconfig.json
