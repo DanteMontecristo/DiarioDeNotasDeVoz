@@ -10,7 +10,7 @@ import * as Haptics from "expo-haptics";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
-import { DURACION_MAXIMA_MS } from "@/utils/duracion";
+import type { Calidad } from "@/utils/ajustes";
 import { nivelDesdeMedidor } from "@/utils/grabadora";
 
 export type AudioGrabado = { uri: string; duracionMs: number };
@@ -29,11 +29,18 @@ export type EstadoGrabadora = {
 type Opciones = {
   alTerminar: (audio: AudioGrabado) => void;
   alDescartar: (uri: string) => void;
+  calidad: Calidad;
+  /** La grabación se detiene y se guarda sola al llegar a este límite. */
+  limiteMs: number;
 };
 
+type Destinos = Pick<Opciones, "alTerminar" | "alDescartar">;
 type Fase = "inactiva" | "iniciando" | "grabando";
 
-const OPCIONES_DE_GRABACION = { ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true };
+function opcionesDe(calidad: Calidad) {
+  const base = calidad === "baja" ? RecordingPresets.LOW_QUALITY : RecordingPresets.HIGH_QUALITY;
+  return { ...base, isMeteringEnabled: true };
+}
 const INTERVALO_DE_ESTADO_MS = 100;
 const ETIQUETA_PANTALLA = "grabando-nota";
 
@@ -42,9 +49,9 @@ function sinFallar(promesa: Promise<unknown>): void {
   promesa.catch(() => undefined);
 }
 
-async function empezar(grabador: AudioRecorder): Promise<void> {
+async function empezar(grabador: AudioRecorder, calidad: Calidad): Promise<void> {
   await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
-  await grabador.prepareToRecordAsync();
+  await grabador.prepareToRecordAsync(opcionesDe(calidad));
   grabador.record();
   sinFallar(Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium));
   sinFallar(activateKeepAwakeAsync(ETIQUETA_PANTALLA));
@@ -59,15 +66,15 @@ async function detener(grabador: AudioRecorder): Promise<AudioGrabado | null> {
 }
 
 /** Pide el permiso de micrófono y, si se concede, empieza a grabar. */
-async function pedirPermisoYGrabar(grabador: AudioRecorder): Promise<boolean> {
+async function pedirPermisoYGrabar(grabador: AudioRecorder, calidad: Calidad): Promise<boolean> {
   const permiso = await requestRecordingPermissionsAsync();
   if (permiso.granted) {
-    await empezar(grabador);
+    await empezar(grabador, calidad);
   }
   return permiso.granted;
 }
 
-async function finalizar(grabador: AudioRecorder, guardar: boolean, opciones: Opciones) {
+async function finalizar(grabador: AudioRecorder, guardar: boolean, opciones: Destinos) {
   const audio = await detener(grabador);
   if (!audio) {
     return;
@@ -80,7 +87,8 @@ async function finalizar(grabador: AudioRecorder, guardar: boolean, opciones: Op
 }
 
 /** Arranque y cierre de la grabación, incluido soltar el botón antes de que arranque. */
-function useControl(grabador: AudioRecorder, { alTerminar, alDescartar }: Opciones) {
+function useControl(grabador: AudioRecorder, opciones: Opciones) {
+  const { alTerminar, alDescartar, calidad } = opciones;
   const [permisoNegado, setPermisoNegado] = useState(false);
   const [grabando, setGrabando] = useState(false);
   const fase = useRef<Fase>("inactiva");
@@ -125,14 +133,14 @@ function useControl(grabador: AudioRecorder, { alTerminar, alDescartar }: Opcion
     }
     fase.current = "iniciando";
     cierrePendiente.current = null;
-    pedirPermisoYGrabar(grabador)
+    pedirPermisoYGrabar(grabador, calidad)
       .then(alArrancar)
       .catch(() => {
         // Falló el micrófono, no el permiso: se vuelve al reposo sin culpar al permiso.
         fase.current = "inactiva";
         setGrabando(false);
       });
-  }, [grabador, alArrancar]);
+  }, [grabador, calidad, alArrancar]);
 
   return { grabando, permisoNegado, iniciar, terminar };
 }
@@ -142,15 +150,15 @@ function useControl(grabador: AudioRecorder, { alTerminar, alDescartar }: Opcion
  * corta a los 2 minutos y, si la app pasa a segundo plano, detiene y guarda.
  */
 export function useGrabadora(opciones: Opciones): EstadoGrabadora {
-  const grabador = useAudioRecorder(OPCIONES_DE_GRABACION);
+  const grabador = useAudioRecorder(opcionesDe(opciones.calidad));
   const estado = useAudioRecorderState(grabador, INTERVALO_DE_ESTADO_MS);
   const { grabando, permisoNegado, iniciar, terminar } = useControl(grabador, opciones);
 
   useEffect(() => {
-    if (grabando && estado.durationMillis >= DURACION_MAXIMA_MS) {
+    if (grabando && estado.durationMillis >= opciones.limiteMs) {
       terminar(true);
     }
-  }, [grabando, estado.durationMillis, terminar]);
+  }, [grabando, estado.durationMillis, opciones.limiteMs, terminar]);
 
   useEffect(() => {
     const suscripcion = AppState.addEventListener("change", (siguiente) => {

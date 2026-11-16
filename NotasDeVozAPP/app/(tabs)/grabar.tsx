@@ -5,6 +5,8 @@ import type { AudioGrabado } from "@/sensors/useGrabadora";
 import { obtenerDependencias } from "@/services/dependencias";
 import { guardarGrabacion } from "@/services/notasServicio";
 import { obtenerLugar, pedirPermisoUbicacion } from "@/services/ubicacion";
+import { useAjustes } from "@/services/useAjustes";
+import type { Ajustes } from "@/utils/ajustes";
 import { formatearDuracion } from "@/utils/duracion";
 
 const AVISO_SIN_LUGAR =
@@ -34,37 +36,40 @@ async function descartar(uri: string): Promise<string> {
 }
 
 /** El permiso de ubicación se pide aquí, cuando el usuario activa la función. */
-function useLugar() {
-  const [activo, setActivo] = useState(false);
+function useInterruptorLugar(cambiarAjustes: (cambios: Partial<Ajustes>) => void) {
   const [aviso, setAviso] = useState<string | null>(null);
 
-  const cambiar = useCallback((deseado: boolean) => {
-    setAviso(null);
-    if (!deseado) {
-      setActivo(false);
-      return;
-    }
-    pedirPermisoUbicacion()
-      .then((concedido) => {
-        setActivo(concedido);
-        setAviso(concedido ? null : AVISO_SIN_LUGAR);
-      })
-      .catch(() => setAviso(AVISO_SIN_LUGAR));
-  }, []);
+  const cambiar = useCallback(
+    (deseado: boolean) => {
+      setAviso(null);
+      if (!deseado) {
+        cambiarAjustes({ guardarLugar: false });
+        return;
+      }
+      pedirPermisoUbicacion()
+        .then((concedido) => {
+          cambiarAjustes({ guardarLugar: concedido });
+          setAviso(concedido ? null : AVISO_SIN_LUGAR);
+        })
+        .catch(() => setAviso(AVISO_SIN_LUGAR));
+    },
+    [cambiarAjustes],
+  );
 
-  return { activo, aviso, cambiar };
+  return { aviso, cambiar };
 }
 
 export default function PantallaGrabar() {
   const [mensaje, setMensaje] = useState<string | null>(null);
-  const lugar = useLugar();
+  const { ajustes, cambiar } = useAjustes();
+  const lugar = useInterruptorLugar(cambiar);
 
   const mostrar = useCallback((tarea: Promise<string>) => {
     tarea.then(setMensaje).catch(() => setMensaje("No se pudo completar. Inténtalo de nuevo."));
   }, []);
   const alTerminar = useCallback(
-    (audio: AudioGrabado) => mostrar(guardar(audio, lugar.activo)),
-    [mostrar, lugar.activo],
+    (audio: AudioGrabado) => mostrar(guardar(audio, ajustes.guardarLugar)),
+    [mostrar, ajustes.guardarLugar],
   );
   const alDescartar = useCallback((uri: string) => mostrar(descartar(uri)), [mostrar]);
 
@@ -73,7 +78,15 @@ export default function PantallaGrabar() {
       alTerminar={alTerminar}
       alDescartar={alDescartar}
       mensaje={mensaje}
-      pie={<InterruptorLugar activo={lugar.activo} aviso={lugar.aviso} alCambiar={lugar.cambiar} />}
+      calidad={ajustes.calidad}
+      limiteMs={ajustes.limiteMs}
+      pie={
+        <InterruptorLugar
+          activo={ajustes.guardarLugar}
+          aviso={lugar.aviso}
+          alCambiar={lugar.cambiar}
+        />
+      }
     />
   );
 }

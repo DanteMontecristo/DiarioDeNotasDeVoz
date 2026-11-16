@@ -7,6 +7,7 @@ import {
   useSimultaneousGestures,
 } from "react-native-gesture-handler";
 import { type AudioGrabado, type EstadoGrabadora, useGrabadora } from "@/sensors/useGrabadora";
+import type { Calidad } from "@/utils/ajustes";
 import { DURACION_MAXIMA_MS, formatearDuracion } from "@/utils/duracion";
 import { debeCancelar } from "@/utils/grabadora";
 import { Boton } from "./Boton";
@@ -15,6 +16,8 @@ type Props = {
   alTerminar: (audio: AudioGrabado) => void;
   alDescartar?: (uri: string) => void;
   mensaje: string | null;
+  calidad?: Calidad;
+  limiteMs?: number;
   /** Contenido extra al final de la pantalla (por ejemplo, el interruptor de lugar). */
   pie?: ReactNode;
 };
@@ -100,14 +103,21 @@ function Botones({ grabadora }: { grabadora: EstadoGrabadora }) {
 }
 
 /** Grabadora: mantener presionado graba, soltar guarda y deslizar a la izquierda cancela. */
-export function Grabadora({ alTerminar, alDescartar = ignorar, mensaje, pie }: Props) {
-  const grabadora = useGrabadora({ alTerminar, alDescartar });
+export function Grabadora({
+  alTerminar,
+  alDescartar = ignorar,
+  mensaje,
+  pie,
+  calidad = "alta",
+  limiteMs = DURACION_MAXIMA_MS,
+}: Props) {
+  const grabadora = useGrabadora({ alTerminar, alDescartar, calidad, limiteMs });
   const { gesto, porCancelar } = useGestoGrabar(grabadora);
 
   return (
     <View style={estilos.contenedor}>
       <Text style={estilos.tiempo}>
-        {formatearDuracion(grabadora.duracionMs)} / {formatearDuracion(DURACION_MAXIMA_MS)}
+        {formatearDuracion(grabadora.duracionMs)} / {formatearDuracion(limiteMs)}
       </Text>
       <Medidor nivel={grabadora.nivel} />
 

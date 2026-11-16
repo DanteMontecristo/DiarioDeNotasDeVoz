@@ -41,3 +41,16 @@ describe("compartirAudio", () => {
     });
   });
 });
+
+describe("compartirAudio: tipo de archivo", () => {
+  it.each([
+    ["file:///notas/a.m4a", "audio/mp4"],
+    ["file:///notas/a.3gp", "audio/3gpp"],
+    ["file:///notas/a.caf", "audio/x-caf"],
+    ["file:///notas/a.xyz", "audio/*"],
+  ])("comparte %s como %s", async (uri, mimeType) => {
+    await compartirAudio(uri);
+
+    expect(compartir).toHaveBeenCalledWith(uri, expect.objectContaining({ mimeType }));
+  });
+});

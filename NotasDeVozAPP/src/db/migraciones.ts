@@ -20,6 +20,10 @@ const MIGRACIONES: readonly string[] = [
    );
    CREATE UNIQUE INDEX idx_nota_voz_remote_id ON nota_voz (remote_id);
    CREATE INDEX idx_nota_voz_creada_en ON nota_voz (creada_en);`,
+  `CREATE TABLE ajuste (
+     clave TEXT PRIMARY KEY,
+     valor TEXT NOT NULL
+   );`,
 ];
 
 export const VERSION_ESQUEMA = MIGRACIONES.length;

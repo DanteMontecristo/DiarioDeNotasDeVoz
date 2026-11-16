@@ -66,3 +66,26 @@ describe("migrar", () => {
     });
   });
 });
+
+describe("migración 2: ajustes", () => {
+  it("crea la tabla de ajustes como pares clave-valor", async () => {
+    const db = crearBaseDePrueba();
+    await migrar(db);
+
+    await db.runAsync("INSERT INTO ajuste (clave, valor) VALUES (?, ?)", ["calidad", "baja"]);
+
+    expect(await db.getAllAsync("SELECT clave, valor FROM ajuste", [])).toEqual([
+      { clave: "calidad", valor: "baja" },
+    ]);
+  });
+
+  it("no admite dos valores para la misma clave", async () => {
+    const db = crearBaseDePrueba();
+    await migrar(db);
+    await db.runAsync("INSERT INTO ajuste (clave, valor) VALUES (?, ?)", ["calidad", "baja"]);
+
+    await expect(
+      db.runAsync("INSERT INTO ajuste (clave, valor) VALUES (?, ?)", ["calidad", "alta"]),
+    ).rejects.toThrow(/UNIQUE/);
+  });
+});

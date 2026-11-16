@@ -123,3 +123,16 @@ describe("Grabadora sin permiso de micrófono", () => {
     expect(screen.getByRole("button", { name: "Iniciar grabación" })).toBeTruthy();
   });
 });
+
+describe("Grabadora con un límite elegido en ajustes", () => {
+  it("muestra ese límite en lugar de los 2 minutos", async () => {
+    mockEstado = estado({ grabando: true, duracionMs: 5000 });
+    await render(
+      <GestureHandlerRootView>
+        <Grabadora alTerminar={jest.fn()} mensaje={null} limiteMs={30000} />
+      </GestureHandlerRootView>,
+    );
+
+    expect(screen.getByText("0:05 / 0:30")).toBeTruthy();
+  });
+});

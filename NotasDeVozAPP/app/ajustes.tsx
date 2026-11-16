@@ -1,10 +1,8 @@
-import { PantallaVacia } from "@/components/PantallaVacia";
+import { FormularioAjustes } from "@/components/FormularioAjustes";
+import { useAjustes } from "@/services/useAjustes";
 
 export default function PantallaAjustes() {
-  return (
-    <PantallaVacia
-      titulo="Ajustes"
-      descripcion="Aquí podrás elegir la calidad de grabación y el límite de tiempo."
-    />
-  );
+  const { ajustes, cambiar } = useAjustes();
+
+  return <FormularioAjustes ajustes={ajustes} alCambiar={cambiar} />;
 }
