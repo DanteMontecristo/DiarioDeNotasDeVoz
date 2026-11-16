@@ -1,0 +1,7 @@
+# Antes de subir, cada proyecto con dependencias instaladas debe pasar su `npm run check`.
+for proyecto in NotasDeVozAPI NotasDeVozAPP; do
+  if [ -d "$proyecto/node_modules" ]; then
+    echo "→ npm run check en $proyecto"
+    (cd "$proyecto" && npm run check) || exit 1
+  fi
+done

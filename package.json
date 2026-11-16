@@ -1,0 +1,13 @@
+{
+  "name": "diario-de-notas-de-voz",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Raíz del repositorio: solo instala los hooks de Git. El código vive en NotasDeVozAPP y NotasDeVozAPI.",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.1"
+  }
+}

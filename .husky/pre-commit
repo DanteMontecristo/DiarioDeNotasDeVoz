@@ -1,0 +1,9 @@
+# Formatea y revisa solo los archivos que entran al commit.
+# lint-staged se ejecuta dentro de cada proyecto para usar su .lintstagedrc.json
+# y sus propias versiones de Prettier y ESLint.
+raiz=$(pwd)
+for proyecto in NotasDeVozAPI NotasDeVozAPP; do
+  if [ -d "$proyecto/node_modules" ] && [ -f "$proyecto/.lintstagedrc.json" ]; then
+    (cd "$proyecto" && "$raiz/node_modules/.bin/lint-staged") || exit 1
+  fi
+done

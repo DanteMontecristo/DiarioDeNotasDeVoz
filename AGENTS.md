@@ -13,6 +13,7 @@ Un solo repositorio con dos proyectos independientes, cada uno con su `package.j
 - `NotasDeVozAPI/` — API en Next.js (Route Handlers, `runtime = "nodejs"`) desplegada
   en Vercel, con `firebase-admin`, `zod` y pruebas con Vitest.
 - TypeScript `strict` en ambos. Código, comentarios, commits y respuestas en **español**.
+- El package.json de la raíz solo instala los hooks de Git (Husky y lint-staged)
 
 ## 2. Comandos (se ejecutan dentro de la carpeta de cada proyecto)
 
