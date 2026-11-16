@@ -1,7 +1,16 @@
-import { respuestaError } from "./errores";
+import { ErrorApi, respuestaError } from "./errores";
+import { registrarErrorInterno } from "./registro";
 
 type Manejador = (peticion: Request) => Promise<Response>;
 type ContextoRuta<P> = { params: Promise<P> };
+
+/** Responde con el formato único; los errores no previstos además quedan en el log. */
+function responderError(error: unknown, peticion: Request): Response {
+  if (!(error instanceof ErrorApi)) {
+    registrarErrorInterno(error, peticion);
+  }
+  return respuestaError(error);
+}
 
 /** Envuelve una ruta para que todo error salga con el formato único de la API. */
 export function manejar(manejador: Manejador): Manejador {
@@ -9,7 +18,7 @@ export function manejar(manejador: Manejador): Manejador {
     try {
       return await manejador(peticion);
     } catch (error) {
-      return respuestaError(error);
+      return responderError(error, peticion);
     }
   };
 }
@@ -22,7 +31,7 @@ export function manejarConParams<P>(
     try {
       return await manejador(peticion, await contexto.params);
     } catch (error) {
-      return respuestaError(error);
+      return responderError(error, peticion);
     }
   };
 }

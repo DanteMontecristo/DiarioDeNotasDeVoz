@@ -115,6 +115,8 @@ describe("iniciarSesion", () => {
 
     expect(error).toBeInstanceOf(Error);
     expect(error).not.toBeInstanceOf(ErrorApi);
+    // El código de Firebase queda en el mensaje interno para poder diagnosticar en los logs.
+    expect(error).toMatchObject({ message: expect.stringContaining("API_KEY_INVALID") });
   });
 
   it("trata como error interno una respuesta sin el formato esperado", async () => {

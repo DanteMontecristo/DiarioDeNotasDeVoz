@@ -1,6 +1,42 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ErrorApi } from "./errores";
-import { manejarConParams } from "./ruta";
+
+const registrarErrorInterno = vi.hoisted(() => vi.fn());
+vi.mock("./registro", () => ({ registrarErrorInterno }));
+
+import { manejar, manejarConParams } from "./ruta";
+
+beforeEach(() => {
+  registrarErrorInterno.mockReset();
+});
+
+describe("registro de errores en las rutas", () => {
+  it("registra un error interno y responde 500 sin detalles", async () => {
+    const fallo = new Error("sin red");
+    const ruta = manejar(() => Promise.reject(fallo));
+
+    const respuesta = await ruta(peticion);
+
+    expect(respuesta.status).toBe(500);
+    expect(registrarErrorInterno).toHaveBeenCalledWith(fallo, peticion);
+  });
+
+  it("registra también los errores internos de las rutas con parámetros", async () => {
+    const fallo = new Error("sin red");
+    const ruta = manejarConParams<{ id: string }>(() => Promise.reject(fallo));
+
+    await ruta(peticion, contexto);
+
+    expect(registrarErrorInterno).toHaveBeenCalledWith(fallo, peticion);
+  });
+
+  it("no registra los errores previstos (ErrorApi)", async () => {
+    const ruta = manejar(() => Promise.reject(new ErrorApi(401, "No autenticado")));
+
+    expect((await ruta(peticion)).status).toBe(401);
+    expect(registrarErrorInterno).not.toHaveBeenCalled();
+  });
+});
 
 const peticion = new Request("https://api.test/api/x/7");
 const contexto = { params: Promise.resolve({ id: "7" }) };

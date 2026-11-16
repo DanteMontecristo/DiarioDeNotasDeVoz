@@ -52,7 +52,8 @@ function traducirFallo(cuerpo: unknown, reglas: readonly Regla[]): Error {
   const regla = reglas.find(([prefijo]) => codigo.startsWith(prefijo));
   if (!regla) {
     // No es un ErrorApi: el cliente solo verá "Error interno".
-    return new Error("Fallo no previsto de Firebase Auth");
+    // El código queda en el mensaje interno (va al log, no al cliente) para diagnosticar.
+    return new Error(`Fallo no previsto de Firebase Auth: ${codigo || "respuesta ilegible"}`);
   }
   return new ErrorApi(regla[1], regla[2]);
 }
