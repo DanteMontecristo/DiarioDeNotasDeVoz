@@ -9,6 +9,7 @@ import { POST } from "./route";
 function peticion(datos: unknown): Request {
   return new Request("https://api.test/api/auth/refresh", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(datos),
   });
 }

@@ -14,7 +14,11 @@ const sesion = {
 };
 
 function peticion(cuerpo: string): Request {
-  return new Request("https://api.test/api/auth/registro", { method: "POST", body: cuerpo });
+  return new Request("https://api.test/api/auth/registro", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: cuerpo,
+  });
 }
 
 describe("POST /api/auth/registro", () => {

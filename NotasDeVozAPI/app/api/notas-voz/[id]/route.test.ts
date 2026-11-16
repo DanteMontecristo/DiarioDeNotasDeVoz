@@ -25,6 +25,7 @@ function contexto(id: string): { params: Promise<{ id: string }> } {
 function peticion(metodo: string, cuerpo?: unknown): Request {
   return new Request(`https://api.test/api/notas-voz/${ID}`, {
     method: metodo,
+    headers: { "Content-Type": "application/json" },
     body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
   });
 }
