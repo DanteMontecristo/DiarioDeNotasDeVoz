@@ -8,14 +8,24 @@ import { Reproductor } from "@/components/Reproductor";
 import type { Nota } from "@/repositories/notasRepositorio";
 import { compartirAudio } from "@/services/compartir";
 import { obtenerDependencias } from "@/services/dependencias";
+import { nombrarLugar } from "@/services/ubicacion";
+import { formatearCoordenadas } from "@/utils/lugar";
 import { eliminarNotaConArchivo, obtenerNotaPorId, renombrarNota } from "@/services/notasServicio";
 
 type Carga =
   | { estado: "cargando" }
   | { estado: "no_existe" }
-  | { estado: "lista"; nota: Nota; hayAudio: boolean };
+  | { estado: "lista"; nota: Nota; hayAudio: boolean; lugar: string | null };
 type Cambios = { titulo: string; etiqueta: string | null };
 type Mensaje = { texto: string; esError: boolean };
+
+/** La ciudad donde se grabó; sin conexión para averiguarla, las coordenadas. */
+async function describirLugar(nota: Nota): Promise<string | null> {
+  if (nota.lat === null || nota.lng === null) {
+    return null;
+  }
+  return (await nombrarLugar(nota.lat, nota.lng)) ?? formatearCoordenadas(nota.lat, nota.lng);
+}
 
 async function cargarNota(id: number): Promise<Carga> {
   const deps = await obtenerDependencias();
@@ -23,7 +33,12 @@ async function cargarNota(id: number): Promise<Carga> {
   if (!nota) {
     return { estado: "no_existe" };
   }
-  return { estado: "lista", nota, hayAudio: await deps.almacen.existe(nota.archivoUri) };
+  return {
+    estado: "lista",
+    nota,
+    hayAudio: await deps.almacen.existe(nota.archivoUri),
+    lugar: await describirLugar(nota),
+  };
 }
 
 /** Carga la nota y ofrece las acciones de la pantalla; `mensaje` es el último aviso o error. */
@@ -98,12 +113,13 @@ export default function PantallaNota() {
       <PantallaVacia titulo="La nota ya no existe" descripcion="Vuelve a la lista de notas." />
     );
   }
-  const { nota, hayAudio } = carga;
+  const { nota, hayAudio, lugar } = carga;
 
   return (
     <ScrollView contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
       <Stack.Screen options={{ title: nota.titulo }} />
       <Audio nota={nota} hayAudio={hayAudio} />
+      {lugar ? <Text style={estilos.lugar}>Grabada en: {lugar}</Text> : null}
       <EditorNota
         key={nota.updatedAt}
         titulo={nota.titulo}
@@ -141,5 +157,6 @@ const estilos = StyleSheet.create({
     color: "#78350f",
     backgroundColor: "#fef3c7",
   },
+  lugar: { fontSize: 15, color: "#374151" },
   mensaje: { fontSize: 15, color: "#1f2937", textAlign: "center" },
 });

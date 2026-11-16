@@ -44,6 +44,8 @@ pruebas/           SQLite en memoria para las pruebas
 | `expo-haptics`                                           | Vibración corta al empezar y terminar de grabar                   |
 | `expo-keep-awake`                                        | Mantener la pantalla encendida mientras se graba                  |
 | `expo-sharing`                                           | Compartir el archivo de audio de una nota                         |
+| `expo-sensors`                                           | Acelerómetro: pausar al poner el teléfono boca abajo              |
+| `expo-location`                                          | Guardar el lugar donde se grabó la nota, si el usuario lo activa  |
 | `react-dom`                                              | Lo exige Expo Router; se fija a la misma versión que `react`      |
 | `react-native-gesture-handler`                           | Gestos (mantener presionado, deslizar, doble toque)               |
 | `react-native-reanimated`, `react-native-worklets`       | Animaciones ligadas a los gestos                                  |

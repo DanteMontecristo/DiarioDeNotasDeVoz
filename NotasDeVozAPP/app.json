@@ -8,7 +8,11 @@
     "userInterfaceStyle": "light",
     "android": {
       "package": "com.notasdevoz.app",
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -19,7 +23,13 @@
           "microphonePermission": "La app usa el micrófono únicamente para grabar tus notas de voz cuando tú lo pides."
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "La app usa tu ubicación únicamente para guardar la ciudad donde grabas una nota, si activas esa opción."
+        }
+      ]
     ]
   }
 }

@@ -1,6 +1,7 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useCallback, useEffect, useState } from "react";
 import { type Direccion, posicionConSalto, siguienteVelocidad } from "@/utils/reproductor";
+import { useBocaAbajo } from "./useBocaAbajo";
 
 export type EstadoReproductor = {
   reproduciendo: boolean;
@@ -41,6 +42,10 @@ export function useReproductor(uri: string, duracionGuardadaMs: number): EstadoR
       sinFallar(reproductor.seekTo(0));
     }
   }, [estado.didJustFinish, reproductor]);
+
+  // Poner el teléfono boca abajo pausa; la alternativa sin sensor es el botón Pausar.
+  const pausar = useCallback(() => reproductor.pause(), [reproductor]);
+  useBocaAbajo(estado.playing, pausar);
 
   const irA = useCallback(
     (destinoMs: number) => sinFallar(reproductor.seekTo(destinoMs / MS_POR_SEGUNDO)),

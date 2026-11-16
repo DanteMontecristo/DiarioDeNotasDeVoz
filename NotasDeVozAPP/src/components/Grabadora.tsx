@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { Linking, StyleSheet, Text, View } from "react-native";
 import {
   GestureDetector,
@@ -15,6 +15,8 @@ type Props = {
   alTerminar: (audio: AudioGrabado) => void;
   alDescartar?: (uri: string) => void;
   mensaje: string | null;
+  /** Contenido extra al final de la pantalla (por ejemplo, el interruptor de lugar). */
+  pie?: ReactNode;
 };
 
 const MANTENER_MS = 250;
@@ -98,7 +100,7 @@ function Botones({ grabadora }: { grabadora: EstadoGrabadora }) {
 }
 
 /** Grabadora: mantener presionado graba, soltar guarda y deslizar a la izquierda cancela. */
-export function Grabadora({ alTerminar, alDescartar = ignorar, mensaje }: Props) {
+export function Grabadora({ alTerminar, alDescartar = ignorar, mensaje, pie }: Props) {
   const grabadora = useGrabadora({ alTerminar, alDescartar });
   const { gesto, porCancelar } = useGestoGrabar(grabadora);
 
@@ -133,6 +135,7 @@ export function Grabadora({ alTerminar, alDescartar = ignorar, mensaje }: Props)
           {mensaje}
         </Text>
       ) : null}
+      {pie}
     </View>
   );
 }
