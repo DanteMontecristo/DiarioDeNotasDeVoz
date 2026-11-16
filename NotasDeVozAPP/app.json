@@ -7,8 +7,18 @@
     "scheme": "notasdevoz",
     "userInterfaceStyle": "light",
     "android": {
-      "package": "com.notasdevoz.app"
+      "package": "com.notasdevoz.app",
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-audio"]
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "La app usa el micrófono únicamente para grabar tus notas de voz cuando tú lo pides."
+        }
+      ]
+    ]
   }
 }
