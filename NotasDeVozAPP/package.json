@@ -18,8 +18,10 @@
     "expo-constants": "~58.0.16",
     "expo-linking": "~58.0.17",
     "expo-router": "~58.0.31",
+    "expo-sqlite": "~58.0.17",
     "expo-status-bar": "~58.0.5",
     "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-reanimated": "4.7.1",
@@ -31,6 +33,7 @@
     "@react-native/jest-preset": "^0.88.1",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "^30.0.0",
+    "@types/node": "^22.20.5",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
@@ -44,9 +47,11 @@
   "jest": {
     "preset": "jest-expo",
     "collectCoverageFrom": [
+      "src/db/**/*.{ts,tsx}",
       "src/services/**/*.{ts,tsx}",
       "src/repositories/**/*.{ts,tsx}",
-      "src/utils/**/*.{ts,tsx}"
+      "src/utils/**/*.{ts,tsx}",
+      "!src/**/*.test.{ts,tsx}"
     ],
     "coverageThreshold": {
       "global": {
