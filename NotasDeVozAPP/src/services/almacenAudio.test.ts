@@ -67,3 +67,12 @@ describe("almacenAudio.borrar", () => {
     expect(mockLlamadas).toEqual([]);
   });
 });
+
+describe("almacenAudio.existe", () => {
+  it("dice si el archivo de audio sigue en el teléfono", async () => {
+    mockExistentes.add("file:///documentos/notas/uuid-1.m4a");
+
+    expect(await almacenAudio.existe("file:///documentos/notas/uuid-1.m4a")).toBe(true);
+    expect(await almacenAudio.existe("file:///documentos/notas/perdido.m4a")).toBe(false);
+  });
+});

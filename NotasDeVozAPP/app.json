@@ -18,7 +18,8 @@
         {
           "microphonePermission": "La app usa el micrófono únicamente para grabar tus notas de voz cuando tú lo pides."
         }
-      ]
+      ],
+      "expo-sharing"
     ]
   }
 }

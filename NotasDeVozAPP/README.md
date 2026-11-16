@@ -23,6 +23,7 @@ src/db/            abrir SQLite y migraciones
 src/repositories/  SQL parametrizado (único lugar con SQL)
 src/services/      reglas de negocio (guardar, renombrar y eliminar notas)
 src/utils/         reglas puras (duración, título, etiqueta)
+src/sensors/       hooks del micrófono y del reproductor
 src/components/    UI reutilizable y accesible
 pruebas/           SQLite en memoria para las pruebas
 ```
@@ -42,6 +43,7 @@ pruebas/           SQLite en memoria para las pruebas
 | `expo-crypto`                                            | Generar el identificador (UUID) de cada nota                      |
 | `expo-haptics`                                           | Vibración corta al empezar y terminar de grabar                   |
 | `expo-keep-awake`                                        | Mantener la pantalla encendida mientras se graba                  |
+| `expo-sharing`                                           | Compartir el archivo de audio de una nota                         |
 | `react-dom`                                              | Lo exige Expo Router; se fija a la misma versión que `react`      |
 | `react-native-gesture-handler`                           | Gestos (mantener presionado, deslizar, doble toque)               |
 | `react-native-reanimated`, `react-native-worklets`       | Animaciones ligadas a los gestos                                  |

@@ -25,7 +25,12 @@ beforeEach(async () => {
     Promise.resolve(`file:///documentos/notas/${nombre}`),
   );
   borrar = jest.fn((_uri: string) => Promise.resolve());
-  deps = { db, almacen: { guardar, borrar }, generarId: () => "uuid-1", ahora: () => AHORA };
+  deps = {
+    db,
+    almacen: { guardar, borrar, existe: () => Promise.resolve(true) },
+    generarId: () => "uuid-1",
+    ahora: () => AHORA,
+  };
 });
 
 function grabacion(cambios: Partial<GrabacionTerminada> = {}): GrabacionTerminada {

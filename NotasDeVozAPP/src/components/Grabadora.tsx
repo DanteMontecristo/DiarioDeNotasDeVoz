@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Linking, StyleSheet, Text, View } from "react-native";
 import {
   GestureDetector,
   useLongPressGesture,
@@ -9,6 +9,7 @@ import {
 import { type AudioGrabado, type EstadoGrabadora, useGrabadora } from "@/sensors/useGrabadora";
 import { DURACION_MAXIMA_MS, formatearDuracion } from "@/utils/duracion";
 import { debeCancelar } from "@/utils/grabadora";
+import { Boton } from "./Boton";
 
 type Props = {
   alTerminar: (audio: AudioGrabado) => void;
@@ -21,27 +22,6 @@ const SIN_LIMITE_DE_MOVIMIENTO = 100_000;
 
 function ignorar(): void {}
 
-function Boton({
-  texto,
-  alPulsar,
-  suave,
-}: {
-  texto: string;
-  alPulsar: () => void;
-  suave?: boolean;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={texto}
-      onPress={alPulsar}
-      style={[estilos.boton, suave && estilos.botonSuave]}
-    >
-      <Text style={[estilos.textoBoton, suave && estilos.textoBotonSuave]}>{texto}</Text>
-    </Pressable>
-  );
-}
-
 function AvisoPermiso() {
   return (
     <View style={estilos.aviso}>
@@ -53,7 +33,7 @@ function AvisoPermiso() {
       <Boton
         texto="Abrir ajustes del teléfono"
         alPulsar={() => void Linking.openSettings()}
-        suave
+        variante="suave"
       />
     </View>
   );
@@ -108,7 +88,11 @@ function Botones({ grabadora }: { grabadora: EstadoGrabadora }) {
   return (
     <View style={estilos.fila}>
       <Boton texto="Detener y guardar" alPulsar={() => grabadora.terminar(true)} />
-      <Boton texto="Cancelar grabación" alPulsar={() => grabadora.terminar(false)} suave />
+      <Boton
+        texto="Cancelar grabación"
+        alPulsar={() => grabadora.terminar(false)}
+        variante="suave"
+      />
     </View>
   );
 }
@@ -176,16 +160,6 @@ const estilos = StyleSheet.create({
   textoCirculo: { color: "#ffffff", fontSize: 16, fontWeight: "700", textAlign: "center" },
   ayuda: { fontSize: 14, color: "#4b5563", textAlign: "center" },
   fila: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12 },
-  boton: {
-    minHeight: 48,
-    paddingHorizontal: 20,
-    justifyContent: "center",
-    borderRadius: 10,
-    backgroundColor: "#0f766e",
-  },
-  botonSuave: { backgroundColor: "#ffffff", borderWidth: 1, borderColor: "#0f766e" },
-  textoBoton: { color: "#ffffff", fontSize: 16, fontWeight: "600" },
-  textoBotonSuave: { color: "#0f766e" },
   aviso: { gap: 12, padding: 16, borderRadius: 10, backgroundColor: "#fef3c7" },
   textoAviso: { fontSize: 15, color: "#78350f" },
   mensaje: { fontSize: 16, color: "#1f2937", textAlign: "center" },

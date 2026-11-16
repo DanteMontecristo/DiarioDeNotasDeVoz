@@ -5,6 +5,8 @@ export type AlmacenAudio = {
   /** Mueve la grabación temporal a un lugar persistente y devuelve su ruta definitiva. */
   guardar(uriTemporal: string, nombre: string): Promise<string>;
   borrar(uri: string): Promise<void>;
+  /** Tras reinstalar la app quedan los datos de la nota pero no su audio. */
+  existe(uri: string): Promise<boolean>;
 };
 
 const CARPETA_NOTAS = "notas";
@@ -24,5 +26,9 @@ export const almacenAudio: AlmacenAudio = {
     if (archivo.exists) {
       archivo.delete();
     }
+  },
+
+  async existe(uri) {
+    return new File(uri).exists;
   },
 };
