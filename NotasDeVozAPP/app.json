@@ -9,6 +9,6 @@
     "android": {
       "package": "com.notasdevoz.app"
     },
-    "plugins": ["expo-router", "expo-status-bar"]
+    "plugins": ["expo-router", "expo-status-bar", "expo-audio"]
   }
 }

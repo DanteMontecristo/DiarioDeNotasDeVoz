@@ -21,7 +21,8 @@ no contiene ninguna credencial.
 app/               rutas de Expo Router: (tabs)/index, (tabs)/grabar, nota/[id], ajustes
 src/db/            abrir SQLite y migraciones
 src/repositories/  SQL parametrizado (único lugar con SQL)
-src/utils/         reglas puras (duración, título)
+src/services/      reglas de negocio (guardar, renombrar y eliminar notas)
+src/utils/         reglas puras (duración, título, etiqueta)
 src/components/    UI reutilizable y accesible
 pruebas/           SQLite en memoria para las pruebas
 ```
@@ -36,6 +37,11 @@ pruebas/           SQLite en memoria para las pruebas
 | `expo-linking`, `expo-constants`                         | Requisitos de Expo Router                                         |
 | `expo-status-bar`                                        | Barra de estado del sistema                                       |
 | `expo-sqlite`                                            | Base de datos local: la app funciona sin conexión                 |
+| `expo-audio`                                             | Grabar y reproducir las notas de voz                              |
+| `expo-file-system`                                       | Guardar el audio en una carpeta persistente y borrarlo            |
+| `expo-crypto`                                            | Generar el identificador (UUID) de cada nota                      |
+| `expo-haptics`                                           | Vibración corta al empezar y terminar de grabar                   |
+| `expo-keep-awake`                                        | Mantener la pantalla encendida mientras se graba                  |
 | `react-dom`                                              | Lo exige Expo Router; se fija a la misma versión que `react`      |
 | `react-native-gesture-handler`                           | Gestos (mantener presionado, deslizar, doble toque)               |
 | `react-native-reanimated`, `react-native-worklets`       | Animaciones ligadas a los gestos                                  |
