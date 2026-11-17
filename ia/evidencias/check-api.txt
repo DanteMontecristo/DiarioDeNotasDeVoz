@@ -1,0 +1,51 @@
+Salida de 'npm run check' en NotasDeVozAPI
+Fecha: 2026-11-16  ·  Commit: a29880a
+
+
+> notas-de-voz-api@0.1.0 check
+> npm run typecheck && npm run lint && npm run format:check && npm run test
+
+
+> notas-de-voz-api@0.1.0 typecheck
+> tsc --noEmit
+
+
+> notas-de-voz-api@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> notas-de-voz-api@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> notas-de-voz-api@0.1.0 test
+> vitest run --coverage
+
+
+ RUN  v5.1.0 C:/Users/dante/OneDrive/Escritorio/DiarioDeNotasDeVoz/NotasDeVozAPI
+      Coverage enabled with v8
+
+
+ Test Files  22 passed (22)
+      Tests  153 passed (153)
+   Start at  19:56:09
+   Duration  2.35s (import 39%, tests 39%, transform 13%, worker 9%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |     100 |    97.59 |     100 |     100 |                   
+ lib               |     100 |    96.72 |     100 |     100 |                   
+  registro.ts      |     100 |    93.33 |     100 |     100 | 20                
+  validacion.ts    |     100 |       90 |     100 |     100 | 23                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 233/233 )
+Branches     : 97.59% ( 81/83 )
+Functions    : 100% ( 64/64 )
+Lines        : 100% ( 225/225 )
+================================================================================

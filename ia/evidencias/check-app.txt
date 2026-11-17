@@ -1,0 +1,70 @@
+Salida de 'npm run check' en NotasDeVozAPP
+Fecha: 2026-11-16  ·  Commit: a29880a
+
+
+> notas-de-voz-app@0.1.0 check
+> npm run typecheck && npm run lint && npm run format:check && npm run test
+
+
+> notas-de-voz-app@0.1.0 typecheck
+> tsc --noEmit
+
+
+> notas-de-voz-app@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+> notas-de-voz-app@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> notas-de-voz-app@0.1.0 test
+> jest --coverage
+
+----------------------------|---------|----------|---------|---------|-------------------
+File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------------------------|---------|----------|---------|---------|-------------------
+All files                   |   96.97 |    90.64 |   96.21 |   97.57 |                   
+ api                        |      95 |    93.22 |      92 |    97.4 |                   
+  clienteHttp.ts            |   92.98 |     92.3 |   88.88 |   96.29 | 67,71             
+  config.ts                 |     100 |      100 |     100 |     100 |                   
+  sesionAlmacen.ts          |     100 |    92.85 |     100 |     100 | 11                
+ db                         |     100 |       75 |     100 |     100 |                   
+  conexion.ts               |     100 |      100 |     100 |     100 |                   
+  migraciones.ts            |     100 |       75 |     100 |     100 | 42                
+  tipos.ts                  |       0 |        0 |       0 |       0 |                   
+ repositories               |   96.61 |    82.75 |     100 |   96.55 |                   
+  ajustesRepositorio.ts     |     100 |       75 |     100 |     100 | 8                 
+  notasRepositorio.ts       |      96 |       84 |     100 |   95.91 | 23,31             
+ services                   |   96.39 |    88.37 |   94.54 |   96.78 |                   
+  accesoServicio.ts         |    92.3 |       75 |   85.71 |    92.3 | 71,87             
+  ajustesServicio.ts        |     100 |      100 |     100 |     100 |                   
+  almacenAudio.ts           |     100 |      100 |     100 |     100 |                   
+  compartir.ts              |     100 |    83.33 |     100 |     100 | 12                
+  dependencias.ts           |     100 |      100 |     100 |     100 |                   
+  dependenciasAcceso.ts     |     100 |      100 |     100 |     100 |                   
+  notasServicio.ts          |     100 |       95 |     100 |     100 | 37                
+  resumenServicio.ts        |   92.85 |    88.88 |     100 |   92.85 | 23                
+  sincronizacion.ts         |   94.11 |     87.5 |   66.66 |   94.11 | 22                
+  sincronizacionServicio.ts |   94.02 |    87.75 |   91.66 |   95.38 | 43,51,72          
+  ubicacion.ts              |     100 |      100 |     100 |     100 |                   
+  useAjustes.ts             |     100 |      100 |     100 |     100 |                   
+ utils                      |     100 |    98.24 |     100 |     100 |                   
+  ajustes.ts                |     100 |      100 |     100 |     100 |                   
+  duracion.ts               |     100 |      100 |     100 |     100 |                   
+  etiqueta.ts               |     100 |      100 |     100 |     100 |                   
+  fecha.ts                  |     100 |      100 |     100 |     100 |                   
+  grabadora.ts              |     100 |      100 |     100 |     100 |                   
+  lugar.ts                  |     100 |      100 |     100 |     100 |                   
+  orientacion.ts            |     100 |      100 |     100 |     100 |                   
+  reproductor.ts            |     100 |     87.5 |     100 |     100 | 13                
+  titulo.ts                 |     100 |      100 |     100 |     100 |                   
+----------------------------|---------|----------|---------|---------|-------------------
+
+Test Suites: 36 passed, 36 total
+Tests:       272 passed, 272 total
+Snapshots:   0 total
+Time:        4.632 s
+Ran all test suites.
