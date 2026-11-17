@@ -10,6 +10,15 @@ npx expo start   # servidor de desarrollo; escanee el QR con Expo Go
 npm run check    # typecheck + lint + format:check + test (con cobertura)
 ```
 
+## Generar el APK
+
+```bash
+npx eas-cli@latest build --platform android --profile preview
+```
+
+El perfil `preview` de `eas.json` produce un APK instalable y define la URL pública de la API,
+porque el archivo `.env` no viaja con el repositorio.
+
 ## Variables de entorno
 
 Vea `env.example`. La app solo conoce la URL pública de la API (`EXPO_PUBLIC_API_URL`):
@@ -48,6 +57,7 @@ pruebas/           SQLite en memoria para las pruebas
 | `expo-sensors`                                           | Acelerómetro: pausar al poner el teléfono boca abajo                 |
 | `expo-location`                                          | Guardar el lugar donde se grabó la nota, si el usuario lo activa     |
 | `expo-secure-store`                                      | Guardar los tokens de sesión en el almacenamiento seguro del sistema |
+| `expo-asset`                                             | Lo exige `expo-audio` fuera de Expo Go (en el APK)                   |
 | `react-dom`                                              | Lo exige Expo Router; se fija a la misma versión que `react`         |
 | `react-native-gesture-handler`                           | Gestos (mantener presionado, deslizar, doble toque)                  |
 | `react-native-reanimated`, `react-native-worklets`       | Animaciones ligadas a los gestos                                     |
