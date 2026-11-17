@@ -11,6 +11,12 @@ npm run dev     # servidor de desarrollo
 npm run check   # typecheck + lint + format:check + test (con cobertura)
 ```
 
+## Versión de Node
+
+La API necesita **Node 22**: `firebase-admin` depende de un módulo que versiones anteriores
+no pueden cargar (falla con `ERR_REQUIRE_ESM`). `package.json` lo fija en `engines` y Vercel
+lo respeta al desplegar.
+
 ## Variables de entorno
 
 Vea `env.example`. Las claves reales viven únicamente en Vercel.
