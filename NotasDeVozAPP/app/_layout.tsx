@@ -10,6 +10,7 @@ export default function LayoutRaiz() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="nota/[id]" options={{ title: "Nota" }} />
         <Stack.Screen name="ajustes" options={{ title: "Ajustes" }} />
+        <Stack.Screen name="cuenta" options={{ title: "Cuenta" }} />
       </Stack>
       <StatusBar style="dark" />
     </GestureHandlerRootView>

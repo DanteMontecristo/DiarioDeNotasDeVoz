@@ -1,22 +1,33 @@
 import { Link, Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-function EnlaceAjustes() {
+type PropsEnlace = { destino: "/cuenta" | "/ajustes"; texto: string; descripcion: string };
+
+function Enlace({ destino, texto, descripcion }: PropsEnlace) {
   return (
     <Link
-      href="/ajustes"
+      href={destino}
       accessibilityRole="button"
-      accessibilityLabel="Abrir ajustes"
+      accessibilityLabel={descripcion}
       style={estilos.enlace}
     >
-      Ajustes
+      {texto}
     </Link>
+  );
+}
+
+function EnlacesCabecera() {
+  return (
+    <View style={estilos.cabecera}>
+      <Enlace destino="/cuenta" texto="Cuenta" descripcion="Abrir cuenta" />
+      <Enlace destino="/ajustes" texto="Ajustes" descripcion="Abrir ajustes" />
+    </View>
   );
 }
 
 export default function LayoutPestanas() {
   return (
-    <Tabs screenOptions={{ headerRight: EnlaceAjustes, tabBarLabelStyle: estilos.etiqueta }}>
+    <Tabs screenOptions={{ headerRight: EnlacesCabecera, tabBarLabelStyle: estilos.etiqueta }}>
       <Tabs.Screen name="index" options={{ title: "Mis notas", tabBarLabel: "Notas" }} />
       <Tabs.Screen name="grabar" options={{ title: "Grabar", tabBarLabel: "Grabar" }} />
     </Tabs>
@@ -24,6 +35,7 @@ export default function LayoutPestanas() {
 }
 
 const estilos = StyleSheet.create({
-  enlace: { paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: "#0f766e" },
+  cabecera: { flexDirection: "row" },
+  enlace: { paddingHorizontal: 12, paddingVertical: 12, fontSize: 16, color: "#0f766e" },
   etiqueta: { fontSize: 14 },
 });

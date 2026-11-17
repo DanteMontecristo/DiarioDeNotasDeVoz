@@ -29,7 +29,8 @@
         {
           "locationWhenInUsePermission": "La app usa tu ubicación únicamente para guardar la ciudad donde grabas una nota, si activas esa opción."
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }
