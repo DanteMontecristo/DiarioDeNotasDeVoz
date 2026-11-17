@@ -11,11 +11,14 @@ npm run dev     # servidor de desarrollo
 npm run check   # typecheck + lint + format:check + test (con cobertura)
 ```
 
-## Versión de Node
+## Versión de Node y la dependencia `jose`
 
-La API necesita **Node 22**: `firebase-admin` depende de un módulo que versiones anteriores
-no pueden cargar (falla con `ERR_REQUIRE_ESM`). `package.json` lo fija en `engines` y Vercel
-lo respeta al desplegar.
+- La API se despliega con **Node 22** (`engines` en `package.json`).
+- `package.json` fuerza `jose` a la versión 5 con `overrides`. `firebase-admin` trae la 6, que es
+  solo ESM y en Vercel no se puede cargar con `require`: las rutas privadas respondían 500
+  (`ERR_REQUIRE_ESM`). La versión 5 ofrece las mismas funciones que usa `jwks-rsa`.
+- `pruebas/carga-firebase.test.ts` lo vigila: carga `firebase-admin` real en las mismas
+  condiciones de Vercel. No quite el `overrides` sin que esa prueba pase.
 
 ## Variables de entorno
 
