@@ -22,6 +22,10 @@ export const almacenAudio: AlmacenAudio = {
   },
 
   async borrar(uri) {
+    // Una nota traída de otro dispositivo no tiene audio: su ruta está vacía.
+    if (uri === "") {
+      return;
+    }
     const archivo = new File(uri);
     if (archivo.exists) {
       archivo.delete();
@@ -29,6 +33,6 @@ export const almacenAudio: AlmacenAudio = {
   },
 
   async existe(uri) {
-    return new File(uri).exists;
+    return uri !== "" && new File(uri).exists;
   },
 };

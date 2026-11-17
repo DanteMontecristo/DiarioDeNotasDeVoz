@@ -76,3 +76,14 @@ describe("almacenAudio.existe", () => {
     expect(await almacenAudio.existe("file:///documentos/notas/perdido.m4a")).toBe(false);
   });
 });
+
+describe("almacenAudio con una nota sin audio", () => {
+  it("una ruta vacía no existe y borrarla no hace nada", async () => {
+    mockExistentes.add("");
+
+    expect(await almacenAudio.existe("")).toBe(false);
+    await almacenAudio.borrar("");
+
+    expect(mockLlamadas).toEqual([]);
+  });
+});

@@ -129,3 +129,121 @@ export async function eliminarNota(
   });
   return archivoUri;
 }
+
+// ---------- Sincronización con la API ----------
+
+export type NotaPendiente = Nota & { eliminada: boolean };
+
+/** Lo que la API guarda de una nota, ya con los nombres que usa la app. */
+export type NotaRemota = {
+  remoteId: string;
+  titulo: string;
+  duracionMs: number;
+  etiqueta: string | null;
+  lat: number | null;
+  lng: number | null;
+  creadaEn: string;
+  updatedAt: string;
+  eliminada: boolean;
+};
+
+export type ResultadoRemota = { aplicada: boolean; audioHuerfano: string | null };
+
+/** Notas con cambios sin enviar, incluidas las eliminadas en el teléfono. */
+export async function listarPendientes(db: BaseDatos): Promise<NotaPendiente[]> {
+  const filas = await db.getAllAsync("SELECT * FROM nota_voz WHERE pending = 1 ORDER BY id", []);
+  return filas.map((fila) => ({ ...aNota(fila), eliminada: numero(fila, "deleted") === 1 }));
+}
+
+/**
+ * Marca la nota como enviada. Solo aplica si no cambió desde que se envió
+ * (`enviadaCon` es su `updated_at` de ese momento); si cambió, sigue pendiente.
+ */
+export async function marcarSincronizada(
+  db: BaseDatos,
+  id: number,
+  enviadaCon: string,
+  updatedAtServidor: string,
+): Promise<void> {
+  await db.runAsync(
+    "UPDATE nota_voz SET pending = 0, updated_at = ? WHERE id = ? AND updated_at = ?",
+    [updatedAtServidor, id, enviadaCon],
+  );
+}
+
+/** Quita definitivamente una fila cuyo borrado ya conoce el servidor. */
+export async function purgarNota(db: BaseDatos, id: number): Promise<void> {
+  await db.runAsync("DELETE FROM nota_voz WHERE id = ?", [id]);
+}
+
+async function insertarRemota(db: BaseDatos, nota: NotaRemota): Promise<void> {
+  // Sin audio: el archivo se quedó en el dispositivo donde se grabó.
+  await db.runAsync(
+    `INSERT INTO nota_voz
+       (titulo, archivo_uri, duracion_ms, etiqueta, lat, lng, creada_en, remote_id, updated_at)
+     VALUES (?, '', ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      nota.titulo,
+      nota.duracionMs,
+      nota.etiqueta,
+      nota.lat,
+      nota.lng,
+      nota.creadaEn,
+      nota.remoteId,
+      nota.updatedAt,
+    ],
+  );
+}
+
+async function actualizarConRemota(db: BaseDatos, nota: NotaRemota): Promise<void> {
+  await db.runAsync(
+    `UPDATE nota_voz
+        SET titulo = ?, duracion_ms = ?, etiqueta = ?, lat = ?, lng = ?, creada_en = ?, updated_at = ?
+      WHERE remote_id = ?`,
+    [
+      nota.titulo,
+      nota.duracionMs,
+      nota.etiqueta,
+      nota.lat,
+      nota.lng,
+      nota.creadaEn,
+      nota.updatedAt,
+      nota.remoteId,
+    ],
+  );
+}
+
+async function aplicarSobreFila(
+  db: BaseDatos,
+  fila: Fila | null,
+  nota: NotaRemota,
+): Promise<ResultadoRemota> {
+  if (!fila) {
+    if (!nota.eliminada) {
+      await insertarRemota(db, nota);
+    }
+    return { aplicada: true, audioHuerfano: null };
+  }
+  if (numero(fila, "pending") === 1) {
+    // Hay un cambio local sin enviar: se envía primero y no se pisa.
+    return { aplicada: false, audioHuerfano: null };
+  }
+  if (nota.eliminada) {
+    await purgarNota(db, numero(fila, "id"));
+    return { aplicada: true, audioHuerfano: texto(fila, "archivo_uri") || null };
+  }
+  await actualizarConRemota(db, nota);
+  return { aplicada: true, audioHuerfano: null };
+}
+
+/** Aplica en el teléfono un cambio que llegó de la API (crear, actualizar o eliminar). */
+export async function aplicarRemota(db: BaseDatos, nota: NotaRemota): Promise<ResultadoRemota> {
+  let resultado: ResultadoRemota = { aplicada: false, audioHuerfano: null };
+  await db.withTransactionAsync(async () => {
+    const fila = await db.getFirstAsync("SELECT * FROM nota_voz WHERE remote_id = ?", [
+      nota.remoteId,
+    ]);
+    resultado = await aplicarSobreFila(db, fila, nota);
+  });
+  return resultado;
+}
